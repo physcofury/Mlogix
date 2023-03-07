@@ -19,6 +19,7 @@ class ParentTask(Task):
 
 tasks = []
 
+# adds a parent or sub task to the tasks list
 def add_task():
     try:
         print("\nAdd a task")
@@ -89,6 +90,7 @@ def add_task():
     except Exception as error:
         print(error)
 
+#displays all added Parent tasks and their Sub tasks
 def view_task():
     print("\nView tasks")
     for i, task in enumerate(tasks):
@@ -139,7 +141,7 @@ def view_task():
             {'Complete' if task.complete else 'Incomplete'}\n
             Time remaining: {time_remaining_str}""")
 
-
+# lets you edit the title, description, start date, end date and completion status all in one palce
 def edit_task():
     while True:
         index_or_title = input("Enter the index or title of the task: ")
@@ -215,7 +217,8 @@ def edit_task():
         setattr(task, field, new_value)
         print("Task updated successfully.")
         break
-        
+
+#lets you edit the title of a chosen task        
 def edit_title():
     task_id = input("Enter the title or index of the task: ")
     task = None
@@ -234,6 +237,7 @@ def edit_title():
     # Validate input here
     task.title = new_title
 
+#lets you edit the description of a chosen task
 def edit_description():
     task_id = input("Enter the title or index of the task: ")
     task = None
@@ -251,6 +255,7 @@ def edit_description():
     # Validate input here
     task.description = new_description
 
+#marks a task as True (complete)
 def mark_done():
     task_id = input("Enter the title or index of the task to mark as done: ")
     task = None
@@ -266,6 +271,7 @@ def mark_done():
         return
     task.complete = True
 
+#marks a task as False (incomplete)
 def unmark_done():
     task_id = input("Enter the title or index of the task to mark as incomplete: ")
     task = None
@@ -281,6 +287,7 @@ def unmark_done():
         return
     task.complete = False
 
+#removes a task from the task list
 def remove_task():
     task_id = input("Enter the title or index of the task to remove: ")
     task = None
@@ -296,7 +303,7 @@ def remove_task():
         return
     tasks.remove(task)
 
-
+#handles choices in main program loop
 def handle_choice(choice):
     functions = [add_task, view_task, edit_task, edit_title, edit_description, mark_done, unmark_done, remove_task]
     
