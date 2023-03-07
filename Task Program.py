@@ -34,6 +34,7 @@ def add_task():
                 parent_index = int(parent_identifier)
                 parent_task = tasks[parent_index]
                 
+                
             except ValueError:
                 # If parent_identifier can't be interpreted as an integer, assume it's a title
                 for task in tasks:
@@ -82,7 +83,7 @@ def add_task():
             s_date_unix = int(s_date_converted.timestamp())
             e_date_unix = int(e_date_converted.timestamp())
 
-            task = Task(title, descrip, s_date_unix, e_date_unix)
+            task = ParentTask(title, descrip, s_date_unix, e_date_unix, [])
             tasks.append(task)
             print("\nTask added successfully!")
     except Exception as error:
@@ -94,7 +95,7 @@ def view_task():
         # calculate the time remaining until the end date
         time_remaining = task.e_date - int(time.time())
 
-         # Calculate the time remaining in months, days, and minutes
+        # Calculate the time remaining in months, days, and minutes
         seconds_remaining = max(0, time_remaining)
         minutes_remaining, seconds_remaining = divmod(seconds_remaining, 60)
         hours_remaining, minutes_remaining = divmod(minutes_remaining, 60)
@@ -105,23 +106,20 @@ def view_task():
         # Format the time remaining as a string
         time_remaining_str = f"{months_remaining} months, {days_remaining} days, {hours_remaining} hours, {minutes_remaining} minutes"
 
-        if isinstance(task, subtask):
-            print(f"""    {i} : {task.title}
-                {task.description}\n\n
-                {'Complete' if task.complete else 'Incomplete'}\n\n
-                Time remaining: {time_remaining_str}""")
-        else:
-            print(f"""{i} : {task.title}
-                {task.description}\n\n
-                {'Complete' if task.complete else 'Incomplete'}\n\n
-                Time remaining: {time_remaining_str}""")
-            
+        if isinstance(task, ParentTask):
+            print("Parent Task")
+            print(f"""{i} : {task.title}\n
+            {task.description}\n
+            {'Complete' if task.complete else 'Incomplete'}\n
+            Time remaining: {time_remaining_str}""")
+
             if task.subtasks:
+
                 for j, subtask in enumerate(task.subtasks):
                     # calculate the time remaining until the end date
                     time_remaining = subtask.e_date - int(time.time())
 
-                     # Calculate the time remaining in months, days, and minutes
+                    # Calculate the time remaining in months, days, and minutes
                     seconds_remaining = max(0, time_remaining)
                     minutes_remaining, seconds_remaining = divmod(seconds_remaining, 60)
                     hours_remaining, minutes_remaining = divmod(minutes_remaining, 60)
@@ -131,10 +129,16 @@ def view_task():
                     # Format the time remaining as a string
                     time_remaining_str = f"{months_remaining} months, {days_remaining} days, {hours_remaining} hours, {minutes_remaining} minutes"
 
-                    print(f"""        {j} : {subtask.title}
-                        {subtask.description}\n\n
-                        {'Complete' if subtask.complete else 'Incomplete'}\n\n
-                        Time remaining: {time_remaining_str}""")
+                    print(f"""\t{j} SubTask : {subtask.title}\n
+                    {subtask.description}\n
+                    {'Complete' if subtask.complete else 'Incomplete'}\n
+                    Time remaining: {time_remaining_str}""")
+        else:
+            print(f"""{i} : {task.title}\n
+            {task.description}\n
+            {'Complete' if task.complete else 'Incomplete'}\n
+            Time remaining: {time_remaining_str}""")
+
 
 def edit_task():
     while True:
