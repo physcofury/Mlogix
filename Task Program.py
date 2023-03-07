@@ -221,7 +221,31 @@ def remove_task():
     tasks.remove(task)
 
 
-
+def handle_choice(choice):
+    functions = [add_task, view_task, edit_task, edit_title, edit_description, mark_done, unmark_done, remove_task]
+    
+    if choice.isdigit() and 1 <= int(choice) <= len(functions):
+        functions[int(choice) - 1]()
+    else:
+        print("Invalid choice.")
+# Main loop
+while True:
+    print("\nOptions:")
+    print("1. Add a task")
+    print("2. View tasks")
+    print("3. Edit a task")
+    print("4. Edit the title of a task")
+    print("5. Edit the description of a task")
+    print("6. Mark a task as done")
+    print("7. Unmark a task as done")
+    print("8. Remove a task")
+    print("9. Exit")
+    choice = input("Enter an option: ")
+    if choice == '9':
+        break
+    
+    handle_choice(choice)
+    
 
 
 
