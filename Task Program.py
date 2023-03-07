@@ -11,33 +11,80 @@ class Task:
         self.e_date = e_date
         self.complete = False
         
+class ParentTask(Task):
+    def __init__(self, title, description, s_date, e_date, subtasks):
+        super().__init__(title, description, s_date, e_date)
+        self.subtasks = subtasks
+
 
 tasks = []
 
 def add_task():
     try:
-
         print("\nAdd a task")
-        title = input("\nEnter name of task: ")
-        descrip = input("\nEnter the description: ")
-        while True:
-            s_date = input("\nEnter the start date with the format (YYYY-MM-DD): \n")
-            e_date = input("\nEnter the end date with the format (YYYY-MM-DD): \n")
 
+        is_subtask = input("\nIs this a subtask? (y/n): ")
+
+        if is_subtask.lower() == 'y':
+            parent_identifier = input("\nEnter the index or title of the parent task: ")
+            parent_task = None
+            
             try:
-                s_date_converted = datetime.datetime.strptime(s_date, "%Y-%m-%d")
-                e_date_converted = datetime.datetime.strptime(e_date, "%Y-%m-%d")
-                break
-
+                # Try to interpret parent_identifier as an integer index
+                parent_index = int(parent_identifier)
+                parent_task = tasks[parent_index]
+                
             except ValueError:
-                print("Incorrect format. please try again")
-                #time.sleep(3)
+                # If parent_identifier can't be interpreted as an integer, assume it's a title
+                for task in tasks:
+                    if task.title == parent_identifier:
+                        parent_task = task
+                        break
+            
+            if parent_task is None:
+                raise ValueError("Invalid parent identifier.")
+            
+            title = input("\nEnter name of subtask: ")
+            descrip = input("\nEnter the description: ")
+            while True:
+                s_date = input("\nEnter the start date with the format (YYYY-MM-DD): \n")
+                e_date = input("\nEnter the end date with the format (YYYY-MM-DD): \n")
 
-        s_date_unix = int(s_date_converted.timestamp())
-        e_date_unix = int(e_date_converted.timestamp())
+                try:
+                    s_date_converted = datetime.datetime.strptime(s_date, "%Y-%m-%d")
+                    e_date_converted = datetime.datetime.strptime(e_date, "%Y-%m-%d")
+                    break
 
-        task = Task(title, descrip, s_date_unix, e_date_unix)
-        tasks.append(task)
+                except ValueError:
+                    print("Incorrect format. please try again")
+
+            s_date_unix = int(s_date_converted.timestamp())
+            e_date_unix = int(e_date_converted.timestamp())
+
+            subtask = Task(title, descrip, s_date_unix, e_date_unix)
+            parent_task.subtasks.append(subtask)
+            print("\nSubtask added successfully!")
+        else:
+            title = input("\nEnter name of task: ")
+            descrip = input("\nEnter the description: ")
+            while True:
+                s_date = input("\nEnter the start date with the format (YYYY-MM-DD): \n")
+                e_date = input("\nEnter the end date with the format (YYYY-MM-DD): \n")
+
+                try:
+                    s_date_converted = datetime.datetime.strptime(s_date, "%Y-%m-%d")
+                    e_date_converted = datetime.datetime.strptime(e_date, "%Y-%m-%d")
+                    break
+
+                except ValueError:
+                    print("Incorrect format. please try again")
+
+            s_date_unix = int(s_date_converted.timestamp())
+            e_date_unix = int(e_date_converted.timestamp())
+
+            task = Task(title, descrip, s_date_unix, e_date_unix)
+            tasks.append(task)
+            print("\nTask added successfully!")
     except Exception as error:
         print(error)
 
@@ -58,11 +105,36 @@ def view_task():
         # Format the time remaining as a string
         time_remaining_str = f"{months_remaining} months, {days_remaining} days, {hours_remaining} hours, {minutes_remaining} minutes"
 
+        if isinstance(task, subtask):
+            print(f"""    {i} : {task.title}
+                {task.description}\n\n
+                {'Complete' if task.complete else 'Incomplete'}\n\n
+                Time remaining: {time_remaining_str}""")
+        else:
+            print(f"""{i} : {task.title}
+                {task.description}\n\n
+                {'Complete' if task.complete else 'Incomplete'}\n\n
+                Time remaining: {time_remaining_str}""")
+            
+            if task.subtasks:
+                for j, subtask in enumerate(task.subtasks):
+                    # calculate the time remaining until the end date
+                    time_remaining = subtask.e_date - int(time.time())
 
-        print(f"""{i} : {task.title}
-        {task.description}\n\n
-        {'Complete' if task.complete else 'Incomplete'}\n\n
-        Time remaining: {time_remaining_str}""")
+                     # Calculate the time remaining in months, days, and minutes
+                    seconds_remaining = max(0, time_remaining)
+                    minutes_remaining, seconds_remaining = divmod(seconds_remaining, 60)
+                    hours_remaining, minutes_remaining = divmod(minutes_remaining, 60)
+                    days_remaining, hours_remaining = divmod(hours_remaining, 24)
+                    months_remaining, days_remaining = divmod(days_remaining, 30)
+
+                    # Format the time remaining as a string
+                    time_remaining_str = f"{months_remaining} months, {days_remaining} days, {hours_remaining} hours, {minutes_remaining} minutes"
+
+                    print(f"""        {j} : {subtask.title}
+                        {subtask.description}\n\n
+                        {'Complete' if subtask.complete else 'Incomplete'}\n\n
+                        Time remaining: {time_remaining_str}""")
 
 def edit_task():
     while True:
