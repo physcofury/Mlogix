@@ -64,9 +64,163 @@ def view_task():
         {'Complete' if task.complete else 'Incomplete'}\n\n
         Time remaining: {time_remaining_str}""")
 
+def edit_task():
+    while True:
+        index_or_title = input("Enter the index or title of the task: ")
 
-add_task()
-view_task()
+        # Try to convert the input to an integer to use as an index
+        try:
+            index = int(index_or_title)
+            task = tasks[index]
+        except ValueError:
+            # If the input cannot be converted to an integer, assume it is a title and search for the task by title
+            for task in tasks:
+                if task.title == index_or_title:
+                    break
+            else:
+                print(f"No task with the title '{index_or_title}' found.")
+                return
+        
+        # Ask the user which field they want to edit
+        field = input("""Which field would you like to edit? Please enter a number\n
+                    1: title
+                    2: Description
+                    3: Starting date
+                    4: End date, 
+                    5: Completetion status
+                    0: Cancel\n """)
+                    
+        # Get the new value for the field from the user
+        if field == "1":
+            new_value = input("Enter the new title: ")
+
+        elif field == "2":
+            new_value = input("Enter the new description: ")
+
+        elif field == "3":
+            new_value = input("Enter the new start date (YYYY-MM-DD): ")
+
+            try:
+                new_value = int(datetime.strptime(new_value, '%Y-%m-%d').timestamp())
+
+            except ValueError:
+                print("Invalid date format. Use YYYY-MM-DD.")
+                return
+            
+        elif field == "4":
+            new_value = input("Enter the new end date (YYYY-MM-DD): ")
+
+            try:
+                new_value = int(datetime.strptime(new_value, '%Y-%m-%d').timestamp())
+
+            except ValueError:
+                print("Incorrect format. please try again.")
+                return
+            
+        elif field == "5":
+            new_value = input("Is the task complete? (y/n): ")
+            new_value = new_value.lower() == "y"
+
+        elif field == "0":
+            break
+
+        else:
+            print("Invalid field.")
+            time.sleep(2)
+        
+         # Set the new value for the field
+        num_list = ['1','2','3','4','5']
+        ta_list = ['title', 'description', 's_date', 'e_date', 'complete']
+        if field in num_list:
+            field = int(field)
+            field = ta_list[field - 1]
+
+        print(field)
+        setattr(task, field, new_value)
+        print("Task updated successfully.")
+        break
+        
+def edit_title():
+    task_id = input("Enter the title or index of the task: ")
+    task = None
+
+    if task_id.isdigit():
+        task = tasks[int(task_id)]
+    else:
+        for t in tasks:
+            if t.title == task_id:
+                task = t
+                break
+    if not task:
+        print("Task not found!")
+        return
+    new_title = input("Enter the new title: ")
+    # Validate input here
+    task.title = new_title
+
+def edit_description():
+    task_id = input("Enter the title or index of the task: ")
+    task = None
+    if task_id.isdigit():
+        task = tasks[int(task_id)]
+    else:
+        for t in tasks:
+            if t.title == task_id:
+                task = t
+                break
+    if not task:
+        print("Task not found!")
+        return
+    new_description = input("Enter the new description:\n\n ")
+    # Validate input here
+    task.description = new_description
+
+def mark_done():
+    task_id = input("Enter the title or index of the task to mark as done: ")
+    task = None
+    if task_id.isdigit():
+        task = tasks[int(task_id)]
+    else:
+        for t in tasks:
+            if t.title == task_id:
+                task = t
+                break
+    if not task:
+        print("Task not found!")
+        return
+    task.complete = True
+
+def unmark_done():
+    task_id = input("Enter the title or index of the task to mark as incomplete: ")
+    task = None
+    if task_id.isdigit():
+        task = tasks[int(task_id)]
+    else:
+        for t in tasks:
+            if t.title == task_id:
+                task = t
+                break
+    if not task:
+        print("Task not found!")
+        return
+    task.complete = False
+
+def remove_task():
+    task_id = input("Enter the title or index of the task to remove: ")
+    task = None
+    if task_id.isdigit():
+        task = tasks[int(task_id)]
+    else:
+        for t in tasks:
+            if t.title == task_id:
+                task = t
+                break
+    if not task:
+        print("Task not found!")
+        return
+    tasks.remove(task)
+
+
 
 
 
